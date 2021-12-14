@@ -89,6 +89,7 @@ output/kindle-clippings.json
     "author": "William Zinsser",
     "location": "148-149",
     "page": "10",
+    "rawDate": "Tuesday, November 10, 2020 9:35:48 PM",
     "date":
     {
       "date": "2020-11-10 21:36:12.000000",
@@ -104,6 +105,7 @@ output/kindle-clippings.json
     "author": "William Zinsser",
     "location": "166-169",
     "page": "11",
+    "rawDate": "Tuesday, November 10, 2020 9:38:42 PM",
     "date":
     {
       "date": "2020-11-10 21:38:42.000000",
@@ -119,6 +121,7 @@ output/kindle-clippings.json
     "author": "William Zinsser",
     "location": "182-182",
     "page": "12",
+    "rawDate": "Tuesday, November 10, 2020 9:42:15 PM",
     "date":
     {
       "date": "2020-11-10 21:42:15.000000",
