@@ -78,7 +78,7 @@ output/on-writing-well-30th-anniversary-edition-an-informal-guide-to-writing-non
 
 ### JSON
 
-output/kindle-clippings.json:
+output/kindle-clippings.json
 
 ```json
 [
