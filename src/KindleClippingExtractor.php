@@ -243,7 +243,7 @@ class KindleClippingExtractor
                     '– page %s, location %s, %s' . PHP_EOL . PHP_EOL,
                     $clipping->page,
                     $clipping->location,
-                    $clipping->date->format('n/j/y \a\t h:ia ')
+                    $clipping->date->format('n/j/y \a\t g:ia ')
                 );
             }
 

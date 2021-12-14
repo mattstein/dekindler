@@ -63,17 +63,17 @@ output/on-writing-well-30th-anniversary-edition-an-informal-guide-to-writing-non
 
 > They sit down to commit an act of literature, and the self who emerges on paper is far stiffer than the person who sat down to write.
 
-– page 10, location 148-148, 11/10/20 at 09:35pm
+– page 10, location 148-148, 11/10/20 at 9:35pm
 
 
 > But the secret of good writing is to strip every sentence to its cleanest components. Every word that serves no function, every long word that could be a short word, every adverb that carries the same meaning that’s already in the verb, every passive construction that leaves the reader unsure of who is doing what—these are the thousand and one adulterants that weaken the strength of a sentence. And they usually occur in proportion to education and rank.
 
-– page 11, location 166-169, 11/10/20 at 09:38pm
+– page 11, location 166-169, 11/10/20 at 9:38pm
 
 
 > Clear thinking becomes clear writing; one can’t exist without the other.
 
-– page 12, location 182-182, 11/10/20 at 09:42pm
+– page 12, location 182-182, 11/10/20 at 9:42pm
 ```
 
 ### JSON
