@@ -233,8 +233,8 @@ class KindleClippingExtractor
             }
 
             $markdown = "---" . PHP_EOL;
-            $markdown .= "- title: " . $firstClipping->title . PHP_EOL;
-            $markdown .= "- author: " . $firstClipping->author . PHP_EOL;
+            $markdown .= "title: " . $firstClipping->title . PHP_EOL;
+            $markdown .= "author: " . $firstClipping->author . PHP_EOL;
             $markdown .= "---" . PHP_EOL . PHP_EOL;
             $markdown .= "# {$firstClipping->title} by {$firstClipping->author}" . PHP_EOL;
 
