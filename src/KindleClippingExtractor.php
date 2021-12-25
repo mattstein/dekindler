@@ -68,6 +68,11 @@ class KindleClippingExtractor
     public bool $silent = false;
 
     /**
+     * @var bool Whether individual book filenames should be web-friendly
+     */
+    public bool $webSafeFilenames = true;
+
+    /**
      * @var array|null Memoized clippings by book title
      */
     private ?array $_clippingsByBook = null;
@@ -220,9 +225,12 @@ class KindleClippingExtractor
 
         foreach ($clippingsByBook as $book => $clippings) {
             $firstClipping = $clippings[0];
-            $clippingCount = count($clippings);
 
-            $filename = self::slugify($firstClipping->title) . ".md";
+            if ($this->webSafeFilenames) {
+                $filename = self::slugify($firstClipping->title) . ".md";
+            } else {
+                $filename = $firstClipping->title . ".md";
+            }
 
             $markdown = "---" . PHP_EOL;
             $markdown .= "- title: " . $firstClipping->title . PHP_EOL;
