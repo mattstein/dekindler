@@ -2,11 +2,13 @@
 
 Reads Amazon Kindle’s `My Clippings.txt` and parses into something useful.
 
-## Usage
+## Setup
 
-```shell
-chmod +x extractor
-```
+1. Check out this project.
+2. Run `composer install` to install dependencies.
+3. Run `chmod +x extractor` so you can execute commands.
+
+## Usage
 
 Write Markdown files, one per book, to an `output/` directory:
 
@@ -17,7 +19,7 @@ Write Markdown files, one per book, to an `output/` directory:
 Customize output:
 
 ```shell
-./extractor extract --overwrite true --format json --jsonFilename my-kindle-clippins.json someplace-else/
+./extractor extract --overwrite true --webSafeFilenames false someplace-else/
 ```
 
 Write a single JSON file instead, and only include highlights—omitting bookmarks and notes:
