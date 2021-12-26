@@ -11,9 +11,10 @@ $testMode = true;
 $clippingsPath = $testMode ? 'test-data/My Clippings.txt' : '/Volumes/Kindle/documents/My Clippings.txt';
 $parser = new KindleClippingExtractor();
 //$parser->silent = true;
+$parser->overwrite = true;
+
 $clippings = $parser->parse(file_get_contents($clippingsPath));
 
-$parser->overwrite = true;
 $parser->write(
     KindleClippingExtractor::OUTPUT_FORMAT_MARKDOWN,
 //    [ KindleClipping::TYPE_HIGHLIGHT ]
