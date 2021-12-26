@@ -34,8 +34,8 @@ output/on-writing-well-30th-anniversary-edition-an-informal-guide-to-writing-non
 
 ```markdown
 ---
-- title: On Writing Well, 30th Anniversary Edition: An Informal Guide to Writing Nonfiction
-- author: William Zinsser
+title: On Writing Well, 30th Anniversary Edition: An Informal Guide to Writing Nonfiction
+author: William Zinsser
 ---
 
 # On Writing Well, 30th Anniversary Edition: An Informal Guide to Writing Nonfiction by William Zinsser
