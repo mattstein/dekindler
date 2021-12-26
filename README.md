@@ -135,6 +135,10 @@ output/kindle-clippings.json
 ]
 ```
 
+## Support
+
+This is a spare time project I made for myself and figured I’d publish. I’ll review PRs and respond to issues when I have time.
+
 ---
 
 <a name="footnote1">1</a>: Doesn’t have to be a Mac, but otherwise you’ll need to specify a <code>sourceFilePath</code> for your system.
