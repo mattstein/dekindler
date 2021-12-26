@@ -30,6 +30,25 @@ Write a single JSON file instead, and only include highlights—omitting bookmar
 ./extractor extract --format json --omitHighlights true --omitBookmarks true
 ```
 
+## Arguments
+
+| Argument    | Description                                           | Default Value |
+| ----------- | ----------------------------------------------------- | ------------- |
+| `outputDir` | (optional) Directory where file(s) should be written. | `'output/'`   |
+
+## Options
+
+| Option           | Description                                       | Default Value                                  |
+| ---------------- | ------------------------------------------------- | ---------------------------------------------- |
+| `sourceFilePath`   | The plain-text file to be read and parsed.      | `'/Volumes/Kindle/documents/My Clippings.txt'` |
+| `format`           | Output format. (`'json'` or `'markdown'`)       | `'markdown'`                                   |
+| `overwrite`        | Whether to overwrite existing output file(s).   | `false`                                        |
+| `webSafeFilenames` | Whether Markdown filenames should be slugified. | `true`                                         |
+| `jsonFilename`     | Filename to use if writing JSON.                | `'kindle-clippings.json'`                      |
+| `omitHighlights`   | Whether to skip processing highlights.          | `false`                                        |
+| `omitNotes`        | Whether to skip processing notes.               | `false`                                        |
+| `omitBookmarks`    | Whether to skip processing bookmarks.           | `true`                                         |
+
 ## Output Examples
 
 ### Markdown
@@ -115,25 +134,6 @@ output/kindle-clippings.json
   }
 ]
 ```
-
-## Arguments
-
-| Argument    | Description                                           | Default Value |
-| ----------- | ----------------------------------------------------- | ------------- |
-| `outputDir` | (optional) Directory where file(s) should be written. | `'output/'`   |
-
-## Options
-
-| Option           | Description                                       | Default Value                                  |
-| ---------------- | ------------------------------------------------- | ---------------------------------------------- |
-| `sourceFilePath`   | The plain-text file to be read and parsed.      | `'/Volumes/Kindle/documents/My Clippings.txt'` |
-| `format`           | Output format. (`'json'` or `'markdown'`)       | `'markdown'`                                   |
-| `overwrite`        | Whether to overwrite existing output file(s).   | `false`                                        |
-| `webSafeFilenames` | Whether Markdown filenames should be slugified. | `true`                                         |
-| `jsonFilename`     | Filename to use if writing JSON.                | `'kindle-clippings.json'`                      |
-| `omitHighlights`   | Whether to skip processing highlights.          | `false`                                        |
-| `omitNotes`        | Whether to skip processing notes.               | `false`                                        |
-| `omitBookmarks`    | Whether to skip processing bookmarks.           | `true`                                         |
 
 ---
 
