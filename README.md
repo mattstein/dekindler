@@ -1,6 +1,6 @@
 # Kindle Clipping Extractor
 
-Reads Amazon Kindle’s `My Clippings.txt` and parses into something useful.
+Reads Amazon Kindle’s `My Clippings.txt`, parses them, and writes them out as Markdown or JSON.
 
 ## Setup
 
