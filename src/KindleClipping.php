@@ -88,19 +88,6 @@ class KindleClipping
     }
 
     /**
-     * Remove BOM from provided string.
-     * https://stackoverflow.com/a/15423899
-     *
-     * @param string $text
-     * @return string
-     */
-    public static function removeUtf8Bom(string $text): string
-    {
-        $bom = pack('H*','EFBBBF');
-        return preg_replace("/^$bom/", '', $text);
-    }
-
-    /**
      *
      * @throws \Exception
      */
@@ -110,7 +97,7 @@ class KindleClipping
         $clippingParts = array_filter(explode("\n", trim($this->rawText)));
 
         // Get the line containing the title and author
-        $titleAndAuthor = self::removeUtf8Bom($clippingParts[0]);
+        $titleAndAuthor = StringHelper::removeUtf8Bom($clippingParts[0]);
 
         // Extract the author name, which is in parentheses
         preg_match('/\((.*)\)/', $titleAndAuthor, $authorMatches);

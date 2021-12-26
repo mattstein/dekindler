@@ -1,0 +1,19 @@
+{
+    "name": "mattstein/kindle-clipping-extractor",
+    "description": "Extract Kindle highlights, notes, and bookmarks.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matt Stein",
+            "email": "m@ttste.in"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "mattstein\\utilities\\": "src/"
+        }
+    },
+    "require": {
+        "symfony/console": "^6.0"
+    }
+}

@@ -4,47 +4,26 @@ Reads Amazon Kindle’s `My Clippings.txt` and parses into something useful.
 
 ## Usage
 
+```shell
+chmod +x extractor
+```
+
 Write Markdown files, one per book, to an `output/` directory:
 
-```php
-<?php
-
-include "src/KindleClippingExtractor.php";
-
-$rawText = file_get_contents('/Volumes/Kindle/documents/My Clippings.txt');
-$parser = new mattstein\utilities\KindleClippingExtractor();
-$parser->parse($rawText);
-$parser->write(KindleClippingExtractor::OUTPUT_FORMAT_MARKDOWN);
+```shell
+./extractor extract
 ```
 
 Customize output:
 
-```php
-// No console output
-$parser->silent = true;
-
-// Overwrite existing files in the output directory
-$parser->overwrite = true;
-
-// Change default `output/` directory (created if it doesn’t exist)
-$parser->outputDir = 'someplace-else/';
-
-// Change default JSON filename
-$parser->jsonFilename = 'my-kindle-clippins.json';
+```shell
+./extractor extract --overwrite true --format json --jsonFilename my-kindle-clippins.json someplace-else/
 ```
 
 Write a single JSON file instead, and only include highlights—omitting bookmarks and notes:
 
-```php
-// ...
-include "src/KindleClipping.php";
-
-$parser = new mattstein\utilities\KindleClippingExtractor();
-$parser->parse($rawText);
-$parser->write(
-    KindleClippingExtractor::OUTPUT_FORMAT_JSON,
-    [ \mattstein\utilities\KindleClipping::TYPE_HIGHLIGHT ]
-);
+```shell
+./extractor extract --format json --omitHighlights true --omitBookmarks true
 ```
 
 ## Output Examples
