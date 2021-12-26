@@ -2,6 +2,8 @@
 
 namespace mattstein\utilities;
 
+use RuntimeException;
+
 /**
  * Object that represents a single item from `My Clippings.txt`.
  */
@@ -77,19 +79,28 @@ class KindleClipping
     public string $text;
 
     /**
+     * @var array Internal options for parser.
+     */
+    private array $options = [];
+
+    /**
      * Grab the `My Clippings.txt` string and parse it.
-     * @param string $text Text content from `My Clippings.txt`.
+     *
+     * @param string $text                 Text content from `My Clippings.txt`.
+     * @param bool   $normalizeAuthorName  Whether the parser should try and normalize author names.
      * @throws \Exception
      */
-    public function __construct(string $text)
+    public function __construct(string $text, bool $normalizeAuthorName = true)
     {
         $this->rawText = $text;
+        $this->options['normalizeAuthorName'] = $normalizeAuthorName;
         $this->parse();
     }
 
     /**
+     * Parses raw text into this object’s properties.
      *
-     * @throws \Exception
+     * @throws RuntimeException if an invalid clipping type is encountered.
      */
     private function parse(): void
     {
@@ -109,7 +120,7 @@ class KindleClipping
         $authorParts = explode(', ', $this->author);
 
         // Standardize author name (`Watts, Alan W.` → `Alan W. Watts`)
-        if (count($authorParts) === 2) {
+        if ($this->options['normalizeAuthorName'] && count($authorParts) === 2) {
             $this->author = trim(trim($authorParts[1]) . ' ' . trim($authorParts[0]));
         }
 
@@ -136,7 +147,7 @@ class KindleClipping
 
         // Don’t quietly tolerate nonsense
         if (!in_array($this->type, self::TYPES, true)) {
-            throw new \Exception("Invalid type {$this->type}.");
+            throw new RuntimeException("Invalid type {$this->type}.");
         }
 
         // Join the remaining lines as our highlight or note text
