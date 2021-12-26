@@ -10,6 +10,8 @@ Reads Amazon Kindle’s `My Clippings.txt` and parses into something useful.
 
 ## Usage
 
+Connect your Kindle to a Mac<sup>[1](#footnote1)</sup> so it’s mounted.
+
 Write Markdown files, one per book, to an `output/` directory:
 
 ```shell
@@ -133,4 +135,6 @@ output/kindle-clippings.json
 | `omitNotes`        | Whether to skip processing notes.               | `false`                                        |
 | `omitBookmarks`    | Whether to skip processing bookmarks.           | `true`                                         |
 
+---
 
+<a name="footnote1">1</a>: Doesn’t have to be a Mac, but otherwise you’ll need to specify a <code>sourceFilePath</code> for your system.
