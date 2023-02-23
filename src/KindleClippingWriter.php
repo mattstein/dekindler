@@ -2,6 +2,9 @@
 
 namespace mattstein\utilities;
 
+use JsonException;
+use RuntimeException;
+
 /**
  * Writes collected KindleClipping objects to a JSON file or individual Markdown files.
  */
@@ -76,12 +79,12 @@ class KindleClippingWriter
      * Writes parsed clippings to JSON or Markdown output
      *
      * @param array  $types Desired types—leave empty to include all clipping types
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function write(array $types = []): void
     {
         if (!file_exists($this->outputDir) && !mkdir($this->outputDir) && !is_dir($this->outputDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created.', $this->outputDir));
+            throw new RuntimeException(sprintf('Directory "%s" was not created.', $this->outputDir));
         }
 
         if ($this->outputFormat === self::OUTPUT_FORMAT_JSON) {
@@ -95,8 +98,8 @@ class KindleClippingWriter
      * Writes a single JSON file with all the parsed clippings
      *
      * @param array $types
-     * @throws \JsonException
-     * @throws \RuntimeException when a file exists that should not be overwritten
+     * @throws JsonException
+     * @throws RuntimeException when a file exists that should not be overwritten
      */
     private function writeJson(array $types = []): void
     {
@@ -105,7 +108,7 @@ class KindleClippingWriter
         $filePath = $this->outputDir . $this->jsonFilename;
 
         if ($this->overwrite === false && file_exists($filePath)) {
-            throw new \RuntimeException("Not writing `${filePath}`; file already exists!");
+            throw new RuntimeException("Not writing `$filePath`; file already exists!");
         }
 
         $this->writeFile($filePath, $json);
@@ -120,7 +123,7 @@ class KindleClippingWriter
     {
         $clippingsByBook = $this->extractor->getClippingsByBook($types);
 
-        foreach ($clippingsByBook as $book => $clippings) {
+        foreach ($clippingsByBook as $clippings) {
             $firstClipping = $clippings[0];
 
             if ($this->webSafeFilenames) {
@@ -133,7 +136,7 @@ class KindleClippingWriter
             $markdown .= "title: " . $firstClipping->title . PHP_EOL;
             $markdown .= "author: " . $firstClipping->author . PHP_EOL;
             $markdown .= "---" . PHP_EOL . PHP_EOL;
-            $markdown .= "# {$firstClipping->title} by {$firstClipping->author}" . PHP_EOL;
+            $markdown .= "# $firstClipping->title by $firstClipping->author" . PHP_EOL;
 
             foreach ($clippings as $clipping) {
                 $markdown .= PHP_EOL;
@@ -141,21 +144,29 @@ class KindleClippingWriter
                 if ($clipping->type === KindleClipping::TYPE_NOTE) {
                     $markdown .= $clipping->text . PHP_EOL . PHP_EOL;
                 } elseif ($clipping->type === KindleClipping::TYPE_HIGHLIGHT) {
-                    $markdown .= "> {$clipping->text}" . PHP_EOL . PHP_EOL;
+                    $markdown .= "> $clipping->text" . PHP_EOL . PHP_EOL;
                 }
 
-                $markdown .= sprintf(
-                    '– page %s, location %s, %s' . PHP_EOL . PHP_EOL,
-                    $clipping->page,
-                    $clipping->location,
-                    $clipping->date->format('n/j/y \a\t g:ia ')
-                );
+				if ($clipping->page) {
+					$markdown .= sprintf(
+						'– page %s, location %s, %s' . PHP_EOL . PHP_EOL,
+						$clipping->page,
+						$clipping->location,
+						$clipping->date->format('n/j/y \a\t g:ia ')
+					);
+				} else {
+					$markdown .= sprintf(
+						'– location %s, %s' . PHP_EOL . PHP_EOL,
+						$clipping->location,
+						$clipping->date->format('n/j/y \a\t g:ia ')
+					);
+				}
             }
 
             $filePath = $this->outputDir . $filename;
 
             if ($this->overwrite === false && file_exists($filePath)) {
-                $this->warnings[] = "Skipped `${filePath}`; file already exists.";
+                $this->warnings[] = "Skipped `$filePath`; file already exists.";
                 continue;
             }
 

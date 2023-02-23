@@ -2,6 +2,7 @@
 
 namespace mattstein\utilities;
 
+use JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,12 +67,12 @@ class ExtractKindleClippingsCommand extends Command
     public ?string $jsonFilename = null;
 
     /**
-     * @var \mattstein\utilities\KindleClippingExtractor
+     * @var KindleClippingExtractor
      */
     private KindleClippingExtractor $extractor;
 
     /**
-     * @var \mattstein\utilities\KindleClippingWriter
+     * @var KindleClippingWriter
      */
     private KindleClippingWriter $writer;
 
@@ -103,7 +104,7 @@ class ExtractKindleClippingsCommand extends Command
 
     /**
      * @inheritdoc
-     * @throws \JsonException
+     * @throws JsonException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -157,7 +158,7 @@ class ExtractKindleClippingsCommand extends Command
             )
         );
 
-        foreach ($clippingsByBook as $book => $clippings) {
+        foreach ($clippingsByBook as $clippings) {
             $firstClipping = $clippings[0];
             $output->writeln($firstClipping->title . ' (' . count($clippings) . ' clippings)');
         }
@@ -223,23 +224,19 @@ class ExtractKindleClippingsCommand extends Command
                 if (isset($settings['type'])) {
                     $type = $settings['type'];
 
-                    if ($type === 'boolean') {
-                        if ($param = $input->getOption($rule)) {
-                            $originalParam = $param;
-                            $param = filter_var($param, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-                            if (!is_bool($param)) {
-                                $this->invalidOption($output, $rule, $originalParam);
-                                return false;
-                            }
-                            $this->{$rule} = $param;
-                        }
-                    }
+                    if (($type === 'boolean') && $param = $input->getOption($rule)) {
+						$originalParam = $param;
+						$param = filter_var($param, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+						if (!is_bool($param)) {
+							$this->invalidOption($output, $rule, $originalParam);
+							return false;
+						}
+						$this->{$rule} = $param;
+					}
                 }
-            } else {
-                if ($param = $input->getOption($rule)) {
-                    $this->{$rule} = $param;
-                }
-            }
+            } else if ($param = $input->getOption($rule)) {
+				$this->{$rule} = $param;
+			}
         }
 
         return true;

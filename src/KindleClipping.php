@@ -2,6 +2,8 @@
 
 namespace mattstein\utilities;
 
+use DateTime;
+use Exception;
 use RuntimeException;
 
 /**
@@ -59,9 +61,9 @@ class KindleClipping
     public string $location;
 
     /**
-     * @var string Relevant page number.
+     * @var string|null Relevant page number.
      */
-    public string $page;
+    public ?string $page;
 
     /**
      * @var string Original date string.
@@ -69,9 +71,9 @@ class KindleClipping
     public string $rawDate;
 
     /**
-     * @var \DateTime Date string represented as a `DateTime` object for formatting and other adventures.
+     * @var DateTime Date string represented as a `DateTime` object for formatting and other adventures.
      */
-    public \DateTime $date;
+    public DateTime $date;
 
     /**
      * @var string Text body of the highlight or note.
@@ -88,13 +90,14 @@ class KindleClipping
      *
      * @param string $text                 Text content from `My Clippings.txt`.
      * @param bool   $normalizeAuthorName  Whether the parser should try and normalize author names.
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(string $text, bool $normalizeAuthorName = true)
     {
         $this->rawText = $text;
         $this->options['normalizeAuthorName'] = $normalizeAuthorName;
-        $this->parse();
+
+		$this->parse();
     }
 
     /**
@@ -132,22 +135,35 @@ class KindleClipping
 
         // Split the meta clipping line into pieces
         $clippedParts = explode(" | ", $clipped);
+		// Split up the type and page number or location pieces
+		$typeAndPage = str_replace('- Your ', '', $clippedParts[0]);
 
-        // Split up the type and page number pieces
-        $typeAndPage = str_replace('- Your ', '', $clippedParts[0]);
-        $typeAndPageParts = explode(' on page ', $typeAndPage);
-        $this->type = strtolower(trim($typeAndPageParts[0]));
-        $this->page = trim($typeAndPageParts[1]);
-        $this->location = str_replace('Location ', '', $clippedParts[1]);
+		$isPageHighlight = str_contains($typeAndPage, 'on page');
+		$isLocationHighlight = str_contains($typeAndPage, 'on Location');
 
-        // Get the date string
-        $dateString = trim(str_replace('Added on ', '', $clippedParts[2]));
-        $this->rawDate = $dateString;
-        $this->date = \DateTime::createFromFormat('l, F j, Y g:i:s A', $dateString);
+		if ($isPageHighlight) {
+			$typeAndPageParts = explode(' on page ', $typeAndPage);
+			$this->page = trim($typeAndPageParts[1]);
+			$this->location = str_replace('Location ', '', $clippedParts[1]);
+			// Get the date string
+			$dateString = trim(str_replace('Added on ', '', $clippedParts[2]));
+		} elseif ($isLocationHighlight) {
+			$typeAndPageParts = explode(' on Location ', $typeAndPage);
+			$this->page = null;
+			$this->location = str_replace('Location ', '', $typeAndPageParts[1]);
+			// Get the date string
+			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
+		} else {
+			throw new RuntimeException("Can’t parse type and location: `$typeAndPage`.");
+		}
 
-        // Don’t quietly tolerate nonsense
+		$this->rawDate = $dateString;
+		$this->date = DateTime::createFromFormat('l, F j, Y g:i:s A', $dateString);
+		$this->type = strtolower(trim($typeAndPageParts[0]));
+
+		// Don’t quietly tolerate nonsense
         if (!in_array($this->type, self::TYPES, true)) {
-            throw new RuntimeException("Invalid type {$this->type}.");
+            throw new RuntimeException("Invalid type $this->type.");
         }
 
         // Join the remaining lines as our highlight or note text

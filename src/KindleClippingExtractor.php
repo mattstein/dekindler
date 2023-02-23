@@ -2,6 +2,8 @@
 
 namespace mattstein\utilities;
 
+use Exception;
+
 /**
  * Parses plain text, presumably from the Kindle’s “My Clippings.txt”, into KindleClipping objects.
  */
@@ -43,7 +45,7 @@ class KindleClippingExtractor
      * @param string $text    Contents of `My Clippings.txt` from Kindle
      * @param array  $types   Desired clipping types—leave empty to collect all types
      * @return KindleClipping[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function parse(string $text, array $types = []): array
     {
