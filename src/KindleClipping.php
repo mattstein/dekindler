@@ -56,9 +56,9 @@ class KindleClipping
     public string $author;
 
     /**
-     * @var string Relevant location number or range of numbers.
+     * @var string|null Relevant location number or range of numbers.
      */
-    public string $location;
+    public ?string $location;
 
     /**
      * @var string|null Relevant page number.
@@ -160,13 +160,22 @@ class KindleClipping
 		$isLocationAtHighlight = str_contains($typeAndPage, 'at location');
         $isHighlightLoc = str_starts_with($clippedParts[0], '- Highlight Loc.');
         $isBookmarkLoc = str_starts_with($clippedParts[0], '- Bookmark Loc.');
+        $isNoteLoc = str_starts_with($clippedParts[0], '- Note Loc.');
 
 		if ($isPageHighlight) {
 			$typeAndPageParts = explode(' on page ', $typeAndPage);
 			$this->page = trim($typeAndPageParts[1]);
-			$this->location = str_replace('Location ', '', $clippedParts[1]);
-			// Get the date string
-			$dateString = trim(str_replace('Added on ', '', $clippedParts[2]));
+
+			if (count($clippedParts) === 2) {
+				// No location
+				$this->location = null;
+				// Get the date string
+				$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
+			} else if (count($clippedParts) === 3) {
+				$this->location = str_replace('Location ', '', $clippedParts[1]);
+				// Get the date string
+				$dateString = trim(str_replace('Added on ', '', $clippedParts[2]));
+			}
 		} elseif ($isLocationOnHighlight) {
 			$typeAndPageParts = explode(' on location ', $typeAndPage);
 			$this->page = null;
@@ -189,6 +198,12 @@ class KindleClipping
 			$this->page = null;
 			$this->location = trim(str_replace('- Bookmark Loc. ', '', $clippedParts[0]));
             $typeAndPageParts = ['bookmark']; // cheat
+			// Get the date string
+			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
+		} elseif ($isNoteLoc) {
+			$this->page = null;
+			$this->location = trim(str_replace('- Note Loc. ', '', $clippedParts[0]));
+            $typeAndPageParts = ['note']; // cheat
 			// Get the date string
 			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
 		} else {

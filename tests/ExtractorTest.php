@@ -3,12 +3,20 @@
 use mattstein\utilities\KindleClipping;
 use mattstein\utilities\KindleClippingExtractor;
 
-//test('extracts everything', function () {
-//    $clippings = (new KindleClippingExtractor())
-//        ->parse(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'My Clippings.txt'));
-//
-//    expect(count($clippings))->toBeGreaterThan(0);
-//});
+/**
+ * Drop “My Clippings.txt” into this test folder to optionally parse its content.
+ * It must have at least one valid item.
+ */
+$testFile = __DIR__ . DIRECTORY_SEPARATOR . 'My Clippings.txt';
+
+if (file_exists($testFile)) {
+	test('extracts everything', function () use ($testFile) {
+		$clippings = (new KindleClippingExtractor())
+			->parse(file_get_contents($testFile));
+		expect(count($clippings))->toBeGreaterThan(0);
+	});
+}
+
 
 test('skips duplicates', function () {
     $content = "==========
@@ -129,7 +137,7 @@ So we navigate mostly by dead reckoning,
     expect($clippings[2]->date->format("Y-m-d H:i:s"))->toEqual('2012-12-05 23:07:35');
 });
 
-test('handles abbreviated location format', function() {
+test('handles abbreviated highlight location format', function() {
    $content = "Dive Into Python (Mark Pilgrim)
 - Highlight Loc. 1150-51  | Added on Wednesday, 5 December 12 06:48:00 GMT+00:59
 
@@ -139,6 +147,32 @@ test('handles abbreviated location format', function() {
     expect($clipping->page)->toBeNull();
     expect($clipping->location)->toEqual('1150-51');
     expect($clipping->date->format("Y-m-d H:i:s"))->toEqual('2012-12-05 06:48:00');
+});
+
+test('handles abbreviated note location format', function() {
+   $content = "Jump Start Node.js (Don Nguyen)
+- Note Loc. 2322  | Added on Wednesday, 26 December 12 00:16:53 GMT+00:59
+
+aaa
+";
+    $clipping = new KindleClipping($content);
+    expect($clipping->page)->toBeNull();
+    expect($clipping->type)->toEqual(KindleClipping::TYPE_NOTE);
+    expect($clipping->location)->toEqual('2322');
+    expect($clipping->date->format("Y-m-d H:i:s"))->toEqual('2012-12-26 00:16:53');
+});
+
+test('handles page highlight without location', function() {
+   $content = "Oreilly.Developing.Backbone.js.Applications.Apr.2012 (Addy Osmani)
+- Highlight on Page 7 | Added on Monday, 3 December 12 19:42:30 Greenwich Mean Time
+
+JavaScript templating libraries (such as Handlebars.js or Mustache)
+";
+    $clipping = new KindleClipping($content);
+    expect($clipping->page)->toEqual(7);
+    expect($clipping->type)->toEqual(KindleClipping::TYPE_HIGHLIGHT);
+    expect($clipping->location)->toBeNull();
+    expect($clipping->date->format("Y-m-d H:i:s"))->toEqual('2012-12-03 19:42:30');
 });
 
 
