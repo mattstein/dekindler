@@ -1,5 +1,8 @@
 # Kindle Clipping Extractor
 
+![Pest status badge](https://github.com/mattstein/kindle-clipping-extractor/actions/workflows/test.yaml/badge.svg?branch=main)
+
+
 Reads Amazon Kindle’s `My Clippings.txt`, parses them, and writes them out as Markdown or JSON.
 
 ## Setup
