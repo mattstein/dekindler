@@ -2,7 +2,7 @@
 
 namespace mattstein\utilities;
 
-use DateTime;
+use DateTimeImmutable;
 use Exception;
 use RuntimeException;
 
@@ -71,9 +71,9 @@ class KindleClipping
     public string $rawDate;
 
     /**
-     * @var DateTime Date string represented as a `DateTime` object for formatting and other adventures.
+     * @var DateTimeImmutable Date string represented as a `DateTime` object for formatting and other adventures.
      */
-    public DateTime $date;
+    public DateTimeImmutable $date;
 
     /**
      * @var string Text body of the highlight or note.
@@ -101,6 +101,21 @@ class KindleClipping
     }
 
     /**
+     * Returns `true` if the provided clipping is considered a duplicate of this one.
+     * @param KindleClipping $clipping
+     * @return bool
+     */
+    public function isDuplicateOf(KindleClipping $clipping): bool
+    {
+        $textMatches = str_contains($this->text, $clipping->text) ||
+            str_contains($clipping->text, $this->text);
+
+        return $textMatches &&
+            $this->title === $clipping->title
+            && $this->type === $clipping->type;
+    }
+
+    /**
      * Parses raw text into this object’s properties.
      *
      * @throws RuntimeException if an invalid clipping type is encountered.
@@ -116,15 +131,16 @@ class KindleClipping
         // Extract the author name, which is in parentheses
         preg_match('/\((.*)\)/', $titleAndAuthor, $authorMatches);
 
+        if (count($authorMatches) !== 2) {
+            throw new RuntimeException("Can’t parse author from `$titleAndAuthor`.");
+        }
+
         // Capture author name without parentheses
         $this->author = $authorMatches[1];
 
-        // Split a lastname, firstname author format into pieces
-        $authorParts = explode(', ', $this->author);
-
         // Standardize author name (`Watts, Alan W.` → `Alan W. Watts`)
-        if ($this->options['normalizeAuthorName'] && count($authorParts) === 2) {
-            $this->author = trim(trim($authorParts[1]) . ' ' . trim($authorParts[0]));
+        if ($this->options['normalizeAuthorName']) {
+            $this->author = StringHelper::normalizeAuthorName($this->author);
         }
 
         // Capture title without author name
@@ -135,11 +151,15 @@ class KindleClipping
 
         // Split the meta clipping line into pieces
         $clippedParts = explode(" | ", $clipped);
+
 		// Split up the type and page number or location pieces
-		$typeAndPage = str_replace('- Your ', '', $clippedParts[0]);
+		$typeAndPage = strtolower(str_replace('- Your ', '', $clippedParts[0]));
 
 		$isPageHighlight = str_contains($typeAndPage, 'on page');
-		$isLocationHighlight = str_contains($typeAndPage, 'on Location');
+		$isLocationOnHighlight = str_contains($typeAndPage, 'on location');
+		$isLocationAtHighlight = str_contains($typeAndPage, 'at location');
+        $isHighlightLoc = str_starts_with($clippedParts[0], '- Highlight Loc.');
+        $isBookmarkLoc = str_starts_with($clippedParts[0], '- Bookmark Loc.');
 
 		if ($isPageHighlight) {
 			$typeAndPageParts = explode(' on page ', $typeAndPage);
@@ -147,10 +167,28 @@ class KindleClipping
 			$this->location = str_replace('Location ', '', $clippedParts[1]);
 			// Get the date string
 			$dateString = trim(str_replace('Added on ', '', $clippedParts[2]));
-		} elseif ($isLocationHighlight) {
-			$typeAndPageParts = explode(' on Location ', $typeAndPage);
+		} elseif ($isLocationOnHighlight) {
+			$typeAndPageParts = explode(' on location ', $typeAndPage);
 			$this->page = null;
-			$this->location = str_replace('Location ', '', $typeAndPageParts[1]);
+			$this->location = str_replace('location ', '', $typeAndPageParts[1]);
+			// Get the date string
+			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
+		} elseif ($isLocationAtHighlight) {
+			$typeAndPageParts = explode(' at location ', $typeAndPage);
+			$this->page = null;
+			$this->location = str_replace('location ', '', $typeAndPageParts[1]);
+			// Get the date string
+			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
+		} elseif ($isHighlightLoc) {
+			$this->page = null;
+			$this->location = trim(str_replace('- Highlight Loc. ', '', $clippedParts[0]));
+            $typeAndPageParts = ['highlight']; // cheat
+			// Get the date string
+			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
+		} elseif ($isBookmarkLoc) {
+			$this->page = null;
+			$this->location = trim(str_replace('- Bookmark Loc. ', '', $clippedParts[0]));
+            $typeAndPageParts = ['bookmark']; // cheat
 			// Get the date string
 			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
 		} else {
@@ -158,8 +196,18 @@ class KindleClipping
 		}
 
 		$this->rawDate = $dateString;
-		$this->date = DateTime::createFromFormat('l, F j, Y g:i:s A', $dateString);
-		$this->type = strtolower(trim($typeAndPageParts[0]));
+
+        if (str_contains($dateString, 'Greenwich Mean Time')) {
+            $dateString = str_replace('Greenwich Mean Time', 'GMT', $dateString);
+        }
+
+        if (! $parsedDate = new DateTimeImmutable($dateString)) {
+            throw new RuntimeException("Can’t parse date: `$dateString`.");
+        }
+
+        $this->date = $parsedDate;
+        // Trim standard characters and `-`
+		$this->type = strtolower(trim($typeAndPageParts[0], " \t\n\r\0\x0B-"));
 
 		// Don’t quietly tolerate nonsense
         if (!in_array($this->type, self::TYPES, true)) {

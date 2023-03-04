@@ -62,6 +62,11 @@ class ExtractKindleClippingsCommand extends Command
     public bool $omitBookmarks = true;
 
     /**
+     * @var bool
+     */
+    public bool $removeDuplicates = true;
+
+    /**
      * @var ?string
      */
     public ?string $jsonFilename = null;
@@ -99,6 +104,7 @@ class ExtractKindleClippingsCommand extends Command
             ->addOption('omitHighlights', 'oh', InputOption::VALUE_OPTIONAL, 'Omit highlights?', $this->omitHighlights)
             ->addOption('omitNotes', 'on', InputOption::VALUE_OPTIONAL, 'Omit notes?', $this->omitNotes)
             ->addOption('omitBookmarks', 'ob', InputOption::VALUE_OPTIONAL, 'Omit bookmarks?', $this->omitBookmarks)
+            ->addOption('removeDuplicates', 'd', InputOption::VALUE_OPTIONAL, 'Remove duplicates?', $this->removeDuplicates)
         ;
     }
 
@@ -115,6 +121,7 @@ class ExtractKindleClippingsCommand extends Command
             'omitHighlights' => ['type' => 'boolean'],
             'omitNotes' => ['type' => 'boolean'],
             'omitBookmarks' => ['type' => 'boolean'],
+            'removeDuplicates' => ['type' => 'boolean'],
             'format',
             'overwrite' => ['type' => 'boolean'],
             'jsonFilename',
@@ -146,7 +153,7 @@ class ExtractKindleClippingsCommand extends Command
             $collectibleTypes[] = KindleClipping::TYPE_BOOKMARK;
         }
 
-        $this->extractor->parse($sourceText, $collectibleTypes);
+        $this->extractor->parse($sourceText, $collectibleTypes, $this->removeDuplicates);
         $clippingsByBook = $this->extractor->getClippingsByBook();
 
         $output->writeln(

@@ -35,6 +35,11 @@ class KindleClippingExtractor
     public int $noteCount = 0;
 
     /**
+     * @var int Number of duplicate clippings
+     */
+    public int $duplicateCount = 0;
+
+    /**
      * @var array|null Memoized clippings by book title
      */
     private ?array $_clippingsByBook = null;
@@ -42,26 +47,40 @@ class KindleClippingExtractor
     /**
      * Parses Kindle’s text file content into KindleClipping objects
      *
-     * @param string $text    Contents of `My Clippings.txt` from Kindle
-     * @param array  $types   Desired clipping types—leave empty to collect all types
+     * @param string $text              Contents of `My Clippings.txt` from Kindle
+     * @param array  $types             Desired clipping types—leave empty to collect all types
+     * @param bool   $ignoreDuplicates  Whether to remove duplicate highlights
      * @return KindleClipping[]
      * @throws Exception
      */
-    public function parse(string $text, array $types = []): array
+    public function parse(string $text, array $types = [], bool $ignoreDuplicates = true): array
     {
         $text = StringHelper::removeUtf8Bom($text);
 
         $this->highlightCount = 0;
         $this->noteCount = 0;
         $this->bookmarkCount = 0;
+        $this->duplicateCount = 0;
         $this->_clippingsByBook = null;
 
         $chunks = array_filter(explode(self::CLIPPING_SEPARATOR, $text), static function($value) {
             return ! empty(trim($value));
         });
 
+        $i = 0;
+
         foreach ($chunks as $chunk) {
             $clipping = new KindleClipping($chunk);
+            $isDuplicate = false;
+
+            if (isset($this->clippings[$i-1])) {
+                $previousClipping = $this->clippings[$i-1];
+                $isDuplicate = $clipping->isDuplicateOf($previousClipping);
+
+                if ($isDuplicate) {
+                    $this->duplicateCount++;
+                }
+            }
 
             if ($clipping->type === KindleClipping::TYPE_HIGHLIGHT) {
                 $this->highlightCount++;
@@ -71,9 +90,13 @@ class KindleClippingExtractor
                 $this->bookmarkCount++;
             }
 
-            if (empty($types) || in_array($clipping->type, $types, true)) {
+            $isCollectible = empty($types) || in_array($clipping->type, $types, true);
+
+            if ($isCollectible && (! $isDuplicate || ! $ignoreDuplicates)) {
                 $this->clippings[] = $clipping;
             }
+
+            $i++;
         }
 
         $this->getClippingsByBook($types);

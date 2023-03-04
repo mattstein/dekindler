@@ -3,3 +3,4 @@
 /vendor
 .DS_Store
 output/
+.phpunit.result.cache

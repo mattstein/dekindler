@@ -46,4 +46,23 @@ class StringHelper
 
         return $text;
     }
+
+    /**
+     * Convert “last name, first name” author name to “first name last name”, or give it back untouched.
+     * 
+     * @param string $name Author’s name from the clipping
+     * @return string
+     */
+    public static function normalizeAuthorName(string $name): string
+    {
+        // Split a lastname, firstname author format into pieces
+        $nameParts = explode(', ', $name);
+
+        // Standardize author name (`Watts, Alan W.` → `Alan W. Watts`)
+        if (count($nameParts) === 2) {
+           return trim(trim($nameParts[1]) . ' ' . trim($nameParts[0]));
+        }
+
+        return $name;
+    }
 }

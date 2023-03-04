@@ -17,5 +17,13 @@
         "php": ">=8.1",
         "symfony/console": "^6.2.0",
         "ext-iconv": "*"
+    },
+    "require-dev": {
+        "pestphp/pest": "^1.22"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
