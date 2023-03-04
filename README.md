@@ -38,8 +38,8 @@ Write a single JSON file instead, and only include highlights—omitting bookmar
 
 ## Options
 
-| Option           | Description                                       | Default Value                                  |
-| ---------------- | ------------------------------------------------- | ---------------------------------------------- |
+| Option           | Description                                     | Default Value                                  |
+| ---------------- |-------------------------------------------------| ---------------------------------------------- |
 | `sourceFilePath`   | The plain-text file to be read and parsed.      | `'/Volumes/Kindle/documents/My Clippings.txt'` |
 | `format`           | Output format. (`'json'` or `'markdown'`)       | `'markdown'`                                   |
 | `overwrite`        | Whether to overwrite existing output file(s).   | `false`                                        |
@@ -48,6 +48,7 @@ Write a single JSON file instead, and only include highlights—omitting bookmar
 | `omitHighlights`   | Whether to skip processing highlights.          | `false`                                        |
 | `omitNotes`        | Whether to skip processing notes.               | `false`                                        |
 | `omitBookmarks`    | Whether to skip processing bookmarks.           | `true`                                         |
+| `removeDuplicates` | Whether to skip duplicate clippings.            | `true`                                         |
 
 ## Output Examples
 
