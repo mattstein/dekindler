@@ -8,7 +8,7 @@ use mattstein\utilities\KindleClippingExtractor;
 $source = $_POST['clipping'] ?? null;
 $format = $_POST['format'] ?? null;
 $types = $_POST['types'] ?? [KindleClipping::TYPE_NOTE, KindleClipping::TYPE_HIGHLIGHT, KindleClipping::TYPE_BOOKMARK];
-$ignoreDuplicates = isset($_POST['ignoreDuplicates']) && $_POST['ignoreDuplicates'] === 'y';
+$ignoreDuplicates = !isset($_POST['ignoreDuplicates']) || $_POST['ignoreDuplicates'] === 'y';
 $clippings = [];
 $output = '';
 $error = '';
