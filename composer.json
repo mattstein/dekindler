@@ -21,6 +21,10 @@
     "require-dev": {
         "pestphp/pest": "^1.22"
     },
+    "scripts": {
+        "test": "./vendor/bin/pest",
+        "demo": "php -S localhost:8000 -t demo/"
+    },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
