@@ -88,7 +88,7 @@ class KindleClipping
     /**
      * Grab the `My Clippings.txt` string and parse it.
      *
-     * @param string $text                 Text content from `My Clippings.txt`.
+     * @param string $text                 Text content from `My Clippings.txt` with delineators removed.
      * @param bool   $normalizeAuthorName  Whether the parser should try and normalize author names.
      * @throws Exception
      */

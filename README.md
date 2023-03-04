@@ -136,6 +136,17 @@ output/kindle-clippings.json
 ]
 ```
 
+## Local Demo
+
+If you’re running PHP locally and you want to try a browser-based demo, navigate do the `demo/` directory from the project root and run PHP’s built-in web server:
+
+```
+cd demo
+php -S localhost:8000
+```
+
+You can visit http://localhost:8000 and try to parse partial or complete clipping files with different options.
+
 ## Support
 
 This is a spare time project I made for myself and figured I’d publish. I’ll review PRs and respond to issues when I have time.
