@@ -190,7 +190,6 @@ class KindleClipping
             $this->page = preg_replace("/[^0-9-]/", "", $left);
         }
 
-
         if (!$parsedDate = new DateTimeImmutable($this->normalizeDate($this->rawDate))) {
             throw new RuntimeException("Can’t parse date: `$this->rawDate`.");
         }
