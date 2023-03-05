@@ -19,11 +19,13 @@
         "ext-iconv": "*"
     },
     "require-dev": {
-        "pestphp/pest": "^1.22"
+        "pestphp/pest": "^1.22",
+        "phpstan/phpstan": "^1.10"
     },
     "scripts": {
         "test": "./vendor/bin/pest",
-        "demo": "php -S localhost:8000 -t demo/"
+        "demo": "php -S localhost:8000 -t demo/",
+        "phpstan": "vendor/bin/phpstan analyse src tests --level 5"
     },
     "config": {
         "allow-plugins": {

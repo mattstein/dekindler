@@ -72,9 +72,9 @@ class ExtractCommand extends Command
     public ?string $jsonFilename = null;
 
     /**
-     * @var KindleClippingExtractor
+     * @var Extractor
      */
-    private KindleClippingExtractor $extractor;
+    private Extractor $extractor;
 
     /**
      * @var Writer
@@ -83,7 +83,7 @@ class ExtractCommand extends Command
 
     public function __construct()
     {
-        $this->extractor = new KindleClippingExtractor();
+        $this->extractor = new Extractor();
         $this->writer = new Writer();
 
         parent::__construct();
@@ -175,12 +175,12 @@ class ExtractCommand extends Command
         }
 
         if ($outputDir = $input->getArgument('outputDir')) {
-            if (empty($outputDir)) {
-                $output->writeln('<error>outputDir cannot be empty.</error>');
-                return Command::INVALID;
-            }
             $this->writer->outputDir = $outputDir;
-        }
+        } else {
+			$output->writeln('<error>outputDir cannot be empty.</error>');
+			return Command::INVALID;
+		}
+
 
         if ($this->overwrite) {
             $this->writer->overwrite = $this->overwrite;
@@ -213,12 +213,12 @@ class ExtractCommand extends Command
     }
 
     /**
-     * @param $input
-     * @param $output
-     * @param $rules
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param array $rules
      * @return bool
      */
-    private function validateInput($input, $output, $rules): bool
+    private function validateInput(InputInterface $input, OutputInterface $output, array $rules): bool
     {
         foreach ($rules as $rule => $settings) {
 
@@ -250,12 +250,12 @@ class ExtractCommand extends Command
     }
 
     /**
-     * @param $output
-     * @param $optionName
-     * @param $optionValue
+     * @param OutputInterface $output
+     * @param string $optionName
+     * @param string $optionValue
      * @return int
      */
-    private function invalidOption($output, $optionName, $optionValue): int
+    private function invalidOption(OutputInterface $output, string $optionName, string $optionValue): int
     {
         $output->writeLn('<error>Invalid option `' . $optionValue .  '` supplied for ' . $optionName . '.</error>');
         return Command::INVALID;

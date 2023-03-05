@@ -197,10 +197,10 @@ class Writer
     /**
      * Saves a file to disk at the provided path
      *
-     * @param $path
-     * @param $contents
+     * @param string $path
+     * @param string $contents
      */
-    private function writeFile($path, $contents): void
+    private function writeFile(string $path, string $contents): void
     {
         file_put_contents($path, $contents);
         $this->filesWritten[] = $path;

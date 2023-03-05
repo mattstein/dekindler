@@ -18,7 +18,7 @@ class StringHelper
     }
 
     // https://stackoverflow.com/a/2955878
-    public static function slugify($text, string $divider = '-'): string
+    public static function slugify(string $text, string $divider = '-'): string
     {
         $text = str_replace(['’', "'"], '', $text);
 
