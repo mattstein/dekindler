@@ -35,10 +35,12 @@ We’re looking for highlights that were made and then corrected, which show up 
     $clippings = $extractor->parse($content);
     expect(count($clippings))->toEqual(1);
     expect($extractor->duplicateCount)->toEqual(1);
+	expect($clippings[0]->text)->toEqual('We’re looking for highlights that were made and then corrected, which show up as separate chunks in the clipping file.');
 
     $extractor = new Extractor();
     $clippings = $extractor->parse($content, [], false);
     expect(count($clippings))->toEqual(2);
+	// The *latest* clipping should be the one that stays
     expect($extractor->duplicateCount)->toEqual(1);
 });
 

@@ -92,8 +92,14 @@ class Extractor
 
             $isCollectible = empty($types) || in_array($clipping->type, $types, true);
 
-            if ($isCollectible && (! $isDuplicate || ! $ignoreDuplicates)) {
-                $this->clippings[] = $clipping;
+            if ($isCollectible) {
+				if ($ignoreDuplicates && $isDuplicate) {
+					// Remove previous, duplicate item
+					array_pop($this->clippings);
+				}
+
+				// Add it to the collection
+				$this->clippings[] = $clipping;
             }
 
             $i++;
