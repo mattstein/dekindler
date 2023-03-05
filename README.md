@@ -8,7 +8,7 @@ Parser for Amazon Kindle’s `My Clippings.txt`, and a CLI command for writing t
 
 1. Check out this project.
 2. Run `composer install` to install dependencies.
-3. Run `chmod +x dekindle` so you can execute commands.
+3. Run `chmod +x dekindler` so you can execute commands.
 
 ## Usage
 
@@ -17,7 +17,7 @@ Connect your Kindle to a Mac<sup>[1](#footnote1)</sup> so it’s mounted.
 Write Markdown files, one per book, to an `output/` directory:
 
 ```shell
-./extractor extract
+./dekindler extract
 ```
 
 Customize output:
