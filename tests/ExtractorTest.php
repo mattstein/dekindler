@@ -1,7 +1,7 @@
 <?php
 
-use mattstein\utilities\KindleClipping;
-use mattstein\utilities\KindleClippingExtractor;
+use mattstein\dekindler\KindleClipping;
+use mattstein\dekindler\Extractor;
 
 /**
  * Drop “My Clippings.txt” into this test folder to optionally parse its content.
@@ -11,7 +11,7 @@ $testFile = __DIR__ . DIRECTORY_SEPARATOR . 'My Clippings.txt';
 
 if (file_exists($testFile)) {
 	test('extracts everything', function () use ($testFile) {
-		$clippings = (new KindleClippingExtractor())
+		$clippings = (new Extractor())
 			->parse(file_get_contents($testFile));
 		expect(count($clippings))->toBeGreaterThan(0);
 	});
@@ -31,12 +31,12 @@ A Pretend Book (Wordlesby, Samuel)
 We’re looking for highlights that were made and then corrected, which show up as separate chunks in the clipping file.
 ==========
 ";
-    $extractor = new KindleClippingExtractor();
+    $extractor = new Extractor();
     $clippings = $extractor->parse($content);
     expect(count($clippings))->toEqual(1);
     expect($extractor->duplicateCount)->toEqual(1);
 
-    $extractor = new KindleClippingExtractor();
+    $extractor = new Extractor();
     $clippings = $extractor->parse($content, [], false);
     expect(count($clippings))->toEqual(2);
     expect($extractor->duplicateCount)->toEqual(1);
@@ -66,21 +66,21 @@ Bird by Bird: Some Instructions on Writing and Life (Anne Lamott)
 ==========
 ";
     // Everything
-    $clippings = (new KindleClippingExtractor())->parse($content);
+    $clippings = (new Extractor())->parse($content);
     expect(count($clippings))->toEqual(4);
 
     // Only notes
-    $clippings = (new KindleClippingExtractor())->parse($content, [KindleClipping::TYPE_NOTE]);
+    $clippings = (new Extractor())->parse($content, [KindleClipping::TYPE_NOTE]);
     expect(count($clippings))->toEqual(1);
     expect($clippings[0]->text)->toContain('Share with that guy');
 
     // Only bookmarks
-    $clippings = (new KindleClippingExtractor())->parse($content, [KindleClipping::TYPE_BOOKMARK]);
+    $clippings = (new Extractor())->parse($content, [KindleClipping::TYPE_BOOKMARK]);
     expect(count($clippings))->toEqual(1);
     expect($clippings[0]->title)->toContain('Bird by Bird');
 
     // Only highlights and notes
-    $extractor = new KindleClippingExtractor();
+    $extractor = new Extractor();
     $clippings = $extractor->parse($content, [KindleClipping::TYPE_NOTE, KindleClipping::TYPE_HIGHLIGHT], false);
     expect(count($clippings))->toEqual(3);
     expect($extractor->noteCount)->toEqual(1);
@@ -102,7 +102,7 @@ A Pretend Book (Wordlesby, Samuel)
 When they do have a page number, however, they’ll start with that and include location in another pipe-separated section.
 ==========
 ";
-    $clippings = (new KindleClippingExtractor())->parse($content);
+    $clippings = (new Extractor())->parse($content);
     $firstClipping = $clippings[0];
     $secondClipping = $clippings[1];
 
@@ -130,7 +130,7 @@ Zen and the Art of Motorcycle Maintenance (Robert M. Pirsig)
 So we navigate mostly by dead reckoning,
 ==========
 ";
-    $clippings = (new KindleClippingExtractor())->parse($content);
+    $clippings = (new Extractor())->parse($content);
 
     expect($clippings[0]->date->format("Y-m-d H:i:s"))->toEqual('2023-02-12 11:50:59');
     expect($clippings[1]->date->format("Y-m-d H:i:s"))->toEqual('2016-03-26 18:37:26');

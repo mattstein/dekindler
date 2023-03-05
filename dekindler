@@ -4,10 +4,10 @@
 require __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-use mattstein\utilities\ExtractKindleClippingsCommand;
+use mattstein\dekindler\ExtractCommand;
 
 $application = new Application();
 
 // ... register commands
-$application->add(new ExtractKindleClippingsCommand());
+$application->add(new ExtractCommand());
 $application->run();

@@ -1,6 +1,6 @@
 <?php
 
-namespace mattstein\utilities;
+namespace mattstein\dekindler;
 
 use JsonException;
 use RuntimeException;
@@ -8,7 +8,7 @@ use RuntimeException;
 /**
  * Writes collected KindleClipping objects to a JSON file or individual Markdown files.
  */
-class KindleClippingWriter
+class Writer
 {
     /**
      * @var string Markdown multi-file output format, where each file will be `[slugified book title].md`
@@ -53,7 +53,7 @@ class KindleClippingWriter
      */
     public bool $webSafeFilenames = true;
 
-    private KindleClippingExtractor $extractor;
+    private Extractor $extractor;
 
     /**
      * @var array Collection of warnings encountered when trying to write file(s)
@@ -68,9 +68,9 @@ class KindleClippingWriter
     /**
      * Provides the writer a reference to the extractor so it can get what it needs for writing
      *
-     * @param KindleClippingExtractor $extractor
+     * @param Extractor $extractor
      */
-    public function setExtractor(KindleClippingExtractor $extractor): void
+    public function setExtractor(Extractor $extractor): void
     {
         $this->extractor = $extractor;
     }

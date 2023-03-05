@@ -1,6 +1,6 @@
 <?php
 
-use mattstein\utilities\StringHelper;
+use mattstein\dekindler\StringHelper;
 
 test('generates expected slugs', function () {
     expect(StringHelper::slugify('Hello World'))->toEqual('hello-world');

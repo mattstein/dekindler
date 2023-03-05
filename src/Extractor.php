@@ -1,13 +1,13 @@
 <?php
 
-namespace mattstein\utilities;
+namespace mattstein\dekindler;
 
 use Exception;
 
 /**
  * Parses plain text, presumably from the Kindle’s “My Clippings.txt”, into KindleClipping objects.
  */
-class KindleClippingExtractor
+class Extractor
 {
     /**
      * @var string Pattern that separates each clipping from the next

@@ -1,5 +1,5 @@
 {
-    "name": "mattstein/kindle-clipping-extractor",
+    "name": "mattstein/dekindler",
     "description": "Extract Kindle highlights, notes, and bookmarks.",
     "license": "MIT",
     "authors": [
@@ -10,7 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "mattstein\\utilities\\": "src/"
+            "mattstein\\dekindler\\": "src/"
         }
     },
     "require": {

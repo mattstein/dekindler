@@ -2,8 +2,8 @@
 
 require '../vendor/autoload.php';
 
-use mattstein\utilities\KindleClipping;
-use mattstein\utilities\KindleClippingExtractor;
+use mattstein\dekindler\KindleClipping;
+use mattstein\dekindler\Extractor;
 
 $source = $_POST['clipping'] ?? null;
 $format = $_POST['format'] ?? null;
@@ -14,7 +14,7 @@ $output = '';
 $error = '';
 
 if ($source) {
-    $extractor = new KindleClippingExtractor();
+    $extractor = new Extractor();
 
 	try {
 		$clippings = $extractor->parse($source, $types, $ignoreDuplicates);

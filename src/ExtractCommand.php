@@ -1,6 +1,6 @@
 <?php
 
-namespace mattstein\utilities;
+namespace mattstein\dekindler;
 
 use JsonException;
 use Symfony\Component\Console\Command\Command;
@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class ExtractKindleClippingsCommand extends Command
+class ExtractCommand extends Command
 {
     /**
      * @inheritdoc
@@ -77,14 +77,14 @@ class ExtractKindleClippingsCommand extends Command
     private KindleClippingExtractor $extractor;
 
     /**
-     * @var KindleClippingWriter
+     * @var Writer
      */
-    private KindleClippingWriter $writer;
+    private Writer $writer;
 
     public function __construct()
     {
         $this->extractor = new KindleClippingExtractor();
-        $this->writer = new KindleClippingWriter();
+        $this->writer = new Writer();
 
         parent::__construct();
     }

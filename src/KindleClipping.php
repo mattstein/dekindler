@@ -1,6 +1,6 @@
 <?php
 
-namespace mattstein\utilities;
+namespace mattstein\dekindler;
 
 use DateTimeImmutable;
 use Exception;

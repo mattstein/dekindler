@@ -1,15 +1,14 @@
-# Kindle Clipping Extractor
+# Dekindler
 
-![Pest status badge](https://github.com/mattstein/kindle-clipping-extractor/actions/workflows/test.yaml/badge.svg?branch=main)
+![Pest status badge](https://github.com/mattstein/dekindler/actions/workflows/test.yaml/badge.svg?branch=main)
 
-
-Reads Amazon Kindle’s `My Clippings.txt`, parses them, and writes them out as Markdown or JSON.
+Parser for Amazon Kindle’s `My Clippings.txt`, and a CLI command for writing to Markdown or JSON.
 
 ## Setup
 
 1. Check out this project.
 2. Run `composer install` to install dependencies.
-3. Run `chmod +x extractor` so you can execute commands.
+3. Run `chmod +x dekindle` so you can execute commands.
 
 ## Usage
 
@@ -24,13 +23,13 @@ Write Markdown files, one per book, to an `output/` directory:
 Customize output:
 
 ```shell
-./extractor extract --overwrite true --webSafeFilenames false someplace-else/
+./dekindler extract --overwrite true --webSafeFilenames false someplace-else/
 ```
 
 Write a single JSON file instead, and only include highlights—omitting bookmarks and notes:
 
 ```shell
-./extractor extract --format json --omitHighlights true --omitBookmarks true
+./dekindler extract --format json --omitHighlights true --omitBookmarks true
 ```
 
 ## Arguments
