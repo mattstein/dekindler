@@ -58,12 +58,12 @@ class KindleClipping
     /**
      * @var string|null Relevant location number or range of numbers.
      */
-    public ?string $location;
+    public ?string $location = null;
 
     /**
      * @var string|null Relevant page number.
      */
-    public ?string $page;
+    public ?string $page = null;
 
     /**
      * @var string Original date string.
@@ -118,15 +118,15 @@ class KindleClipping
     /**
      * Parses raw text into this object’s properties.
      *
-     * @throws RuntimeException if an invalid clipping type is encountered.
+     * @throws RuntimeException|Exception if an invalid clipping type is encountered.
      */
     private function parse(): void
     {
         // Split the clipping text into lines
-        $clippingParts = array_filter(explode("\n", trim($this->rawText)));
+        $rows = array_filter(explode("\n", trim($this->rawText)));
 
         // Get the line containing the title and author
-        $titleAndAuthor = StringHelper::removeUtf8Bom($clippingParts[0]);
+        $titleAndAuthor = StringHelper::removeUtf8Bom($rows[0]);
 
         // Extract the author name, which is in parentheses
         preg_match('/\((.*)\)/', $titleAndAuthor, $authorMatches);
@@ -136,101 +136,113 @@ class KindleClipping
         }
 
         // Capture author name without parentheses
-        $this->author = $authorMatches[1];
-
-        // Standardize author name (`Watts, Alan W.` → `Alan W. Watts`)
-        if ($this->options['normalizeAuthorName']) {
-            $this->author = StringHelper::normalizeAuthorName($this->author);
-        }
+        $this->author = $this->options['normalizeAuthorName'] ?
+			StringHelper::normalizeAuthorName($authorMatches[1]) :
+			$authorMatches[1];
 
         // Capture title without author name
         $this->title = trim(str_replace($authorMatches[0], '', $titleAndAuthor));
 
         // Get the line with the clipping type, page number, location, and timestamp
-        $clipped = $clippingParts[1];
+        $meta = $rows[1];
 
         // Split the meta clipping line into pieces
-        $clippedParts = explode(" | ", $clipped);
+        $columns = explode(" | ", $meta);
 
-		// Split up the type and page number or location pieces
-		$typeAndPage = strtolower(str_replace('- Your ', '', $clippedParts[0]));
-
-		$isPageHighlight = str_contains($typeAndPage, 'on page');
-		$isLocationOnHighlight = str_contains($typeAndPage, 'on location');
-		$isLocationAtHighlight = str_contains($typeAndPage, 'at location');
-        $isHighlightLoc = str_starts_with($clippedParts[0], '- Highlight Loc.');
-        $isBookmarkLoc = str_starts_with($clippedParts[0], '- Bookmark Loc.');
-        $isNoteLoc = str_starts_with($clippedParts[0], '- Note Loc.');
-
-		if ($isPageHighlight) {
-			$typeAndPageParts = explode(' on page ', $typeAndPage);
-			$this->page = trim($typeAndPageParts[1]);
-
-			if (count($clippedParts) === 2) {
-				// No location
-				$this->location = null;
-				// Get the date string
-				$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
-			} else if (count($clippedParts) === 3) {
-				$this->location = str_replace('Location ', '', $clippedParts[1]);
-				// Get the date string
-				$dateString = trim(str_replace('Added on ', '', $clippedParts[2]));
-			}
-		} elseif ($isLocationOnHighlight) {
-			$typeAndPageParts = explode(' on location ', $typeAndPage);
-			$this->page = null;
-			$this->location = str_replace('location ', '', $typeAndPageParts[1]);
-			// Get the date string
-			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
-		} elseif ($isLocationAtHighlight) {
-			$typeAndPageParts = explode(' at location ', $typeAndPage);
-			$this->page = null;
-			$this->location = str_replace('location ', '', $typeAndPageParts[1]);
-			// Get the date string
-			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
-		} elseif ($isHighlightLoc) {
-			$this->page = null;
-			$this->location = trim(str_replace('- Highlight Loc. ', '', $clippedParts[0]));
-            $typeAndPageParts = ['highlight']; // cheat
-			// Get the date string
-			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
-		} elseif ($isBookmarkLoc) {
-			$this->page = null;
-			$this->location = trim(str_replace('- Bookmark Loc. ', '', $clippedParts[0]));
-            $typeAndPageParts = ['bookmark']; // cheat
-			// Get the date string
-			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
-		} elseif ($isNoteLoc) {
-			$this->page = null;
-			$this->location = trim(str_replace('- Note Loc. ', '', $clippedParts[0]));
-            $typeAndPageParts = ['note']; // cheat
-			// Get the date string
-			$dateString = trim(str_replace('Added on ', '', $clippedParts[1]));
+		if (count($columns) === 2) {
+			[$left, $right] = $columns;
+			$middle = null;
+		} else if (count($columns) === 3) {
+			[$left, $middle, $right] = $columns;
 		} else {
-			throw new RuntimeException("Can’t parse type and location: `$typeAndPage`.");
+			throw new RuntimeException("Unexpected number of columns in `$meta`.");
 		}
 
-		$this->rawDate = $dateString;
+		// Remove leading `-` we won’t need
+		$left = trim($left, '-');
 
-        if (str_contains($dateString, 'Greenwich Mean Time')) {
-            $dateString = str_replace('Greenwich Mean Time', 'GMT', $dateString);
-        }
+		$this->validateMeta($left, $middle, $right);
 
-        if (! $parsedDate = new DateTimeImmutable($dateString)) {
-            throw new RuntimeException("Can’t parse date: `$dateString`.");
+		// Handle the middle if we have one
+		if ($middle) {
+			$this->location = preg_replace("/[^0-9-]/", "", $middle);
+		}
+
+		// Handle the right, which we should have
+		$this->rawDate = trim(str_replace('Added on ', '', $right));
+
+		// Determine the type of clipping
+		if (mb_stripos($left, 'highlight') !== false) {
+			$this->type = self::TYPE_HIGHLIGHT;
+		} else if (mb_stripos($left, 'bookmark') !== false) {
+			$this->type = self::TYPE_BOOKMARK;
+		} else if (mb_stripos($left, 'note') !== false) {
+			$this->type = self::TYPE_NOTE;
+		} else {
+			throw new RuntimeException("Can’t determine valid type from `$left`.");
+		}
+
+		if ( ! $this->location && mb_stripos($left, 'loc') !== false) {
+			$this->location = preg_replace("/[^0-9-]/", "", $left);
+		}
+
+		if ( ! $this->page && mb_stripos($left, 'page') !== false) {
+			$this->page = preg_replace("/[^0-9-]/", "", $left);
+		}
+
+
+        if (! $parsedDate = new DateTimeImmutable($this->normalizeDate($this->rawDate))) {
+            throw new RuntimeException("Can’t parse date: `$this->rawDate`.");
         }
 
         $this->date = $parsedDate;
-        // Trim standard characters and `-`
-		$this->type = strtolower(trim($typeAndPageParts[0], " \t\n\r\0\x0B-"));
-
-		// Don’t quietly tolerate nonsense
-        if (!in_array($this->type, self::TYPES, true)) {
-            throw new RuntimeException("Invalid type $this->type.");
-        }
 
         // Join the remaining lines as our highlight or note text
-        $textLines = array_slice($clippingParts, 2);
+        $textLines = array_slice($rows, 2);
         $this->text = trim(implode("\n", $textLines));
     }
+
+	/**
+	 * Throw exceptions if the clipping’s meta row has an unexpected format.
+	 *
+	 * @param string      $left
+	 * @param string|null $middle
+	 * @param string      $right
+	 * @return void
+	 */
+	private function validateMeta(string $left, string|null $middle, string $right): void
+	{
+		// The clipping type should always be the leftmost column
+		if (preg_match('/(bookmark|note|highlight)/i', $left) === 0) {
+			throw new RuntimeException("First meta column must contain known type; got `$left`.");
+		}
+
+		// The clipping timestamp should always be the rightmost column
+		if (preg_match('/(added on)/i', $right) === 0) {
+			throw new RuntimeException("Last meta column must contain timestamp; got `$right`.");
+		}
+
+		// If we have a middle column, it should always include `Loc.` or `Location`
+		if ($middle && preg_match('/(loc)/i', $middle) === 0) {
+			throw new RuntimeException("Middle meta column must contain a location; got `$middle`.");
+		}
+
+		if ($middle && mb_stripos($left, 'page') === false) {
+			throw new RuntimeException("A clipping with a location column must have a page number to the left; got `$left`.");
+		}
+	}
+
+	/**
+	 * Transform any unexpected date string pieces before PHP tries to parse it.
+	 * @param string $date
+	 * @return string
+	 */
+	private function normalizeDate(string $date): string
+	{
+		if (str_contains($date, 'Greenwich Mean Time')) {
+			$date = str_replace('Greenwich Mean Time', 'GMT', $date);
+		}
+
+		return $date;
+	}
 }
