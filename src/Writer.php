@@ -147,20 +147,20 @@ class Writer
                     $markdown .= "> $clipping->text" . PHP_EOL . PHP_EOL;
                 }
 
-				if ($clipping->page) {
-					$markdown .= sprintf(
-						'– page %s, location %s, %s' . PHP_EOL . PHP_EOL,
-						$clipping->page,
-						$clipping->location,
-						$clipping->date->format('n/j/y \a\t g:ia ')
-					);
-				} else {
-					$markdown .= sprintf(
-						'– location %s, %s' . PHP_EOL . PHP_EOL,
-						$clipping->location,
-						$clipping->date->format('n/j/y \a\t g:ia ')
-					);
-				}
+                if ($clipping->page) {
+                    $markdown .= sprintf(
+                        '– page %s, location %s, %s' . PHP_EOL . PHP_EOL,
+                        $clipping->page,
+                        $clipping->location,
+                        $clipping->date->format('n/j/y \a\t g:ia ')
+                    );
+                } else {
+                    $markdown .= sprintf(
+                        '– location %s, %s' . PHP_EOL . PHP_EOL,
+                        $clipping->location,
+                        $clipping->date->format('n/j/y \a\t g:ia ')
+                    );
+                }
             }
 
             $filePath = $this->outputDir . $filename;
