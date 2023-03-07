@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.2 - 2023-03-06
 ### Fixed
 - Fixed a bug that still allowed duplicates to appear in output.
 
