@@ -82,7 +82,7 @@ class Extractor
             $isDuplicate = false;
 
             if (count($this->clippings) > 0) {
-                $previousClipping = array_slice($this->clippings, -1, 1)[0];
+                $previousClipping = $this->clippings[count($this->clippings)-1];
                 $isDuplicate = $clipping->isDuplicateOf($previousClipping);
 
                 if ($isDuplicate) {
