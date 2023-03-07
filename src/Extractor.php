@@ -57,6 +57,7 @@ class Extractor
     {
         $text = StringHelper::removeUtf8Bom($text);
 
+        $this->clippings = [];
         $this->highlightCount = 0;
         $this->noteCount = 0;
         $this->bookmarkCount = 0;
@@ -67,20 +68,8 @@ class Extractor
             return ! empty(trim($value));
         });
 
-        $i = 0;
-
         foreach ($chunks as $chunk) {
             $clipping = new KindleClipping($chunk);
-            $isDuplicate = false;
-
-            if (isset($this->clippings[$i-1])) {
-                $previousClipping = $this->clippings[$i-1];
-                $isDuplicate = $clipping->isDuplicateOf($previousClipping);
-
-                if ($isDuplicate) {
-                    $this->duplicateCount++;
-                }
-            }
 
             if ($clipping->type === KindleClipping::TYPE_HIGHLIGHT) {
                 $this->highlightCount++;
@@ -90,22 +79,29 @@ class Extractor
                 $this->bookmarkCount++;
             }
 
+            $isDuplicate = false;
+
+            if (count($this->clippings) > 0) {
+                $previousClipping = array_slice($this->clippings, -1, 1)[0];
+                $isDuplicate = $clipping->isDuplicateOf($previousClipping);
+
+                if ($isDuplicate) {
+                    $this->duplicateCount++;
+                }
+            }
+
             $isCollectible = empty($types) || in_array($clipping->type, $types, true);
 
             if ($isCollectible) {
-				if ($ignoreDuplicates && $isDuplicate) {
-					// Remove previous, duplicate item
-					array_pop($this->clippings);
-				}
+                if ($ignoreDuplicates && $isDuplicate) {
+                    // Remove previous, duplicate item
+                    array_pop($this->clippings);
+                }
 
-				// Add it to the collection
-				$this->clippings[] = $clipping;
+                // Add it to the collection
+                $this->clippings[] = $clipping;
             }
-
-            $i++;
         }
-
-        $this->getClippingsByBook($types);
 
         return $this->clippings;
     }

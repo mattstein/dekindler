@@ -17,6 +17,30 @@ if (file_exists($testFile)) {
 	});
 }
 
+test('identifies duplicates', function() {
+	$a = new KindleClipping("The Trees (Percival Everett)
+- Your Highlight on page 90 | Location 1367-1369 | Added on Sunday, March 5, 2023 10:13:56 PM
+
+“If you want to know a place, you talk to its history,” Mama Z said. 34 Red Jetty pulled over and turned off the engine of his squad car.
+");
+
+	$b = new KindleClipping("The Trees (Percival Everett)
+- Your Highlight on page 90 | Location 1367-1368 | Added on Sunday, March 5, 2023 10:14:04 PM
+
+“If you want to know a place, you talk to its history,” Mama Z said.
+");
+
+	$c = new KindleClipping("A Pretend Book (Wordlesby, Samuel)
+- Your Highlight on page 12 | Location 4061-4063 | Added on Monday, February 20, 2023 7:16:39 PM
+
+We’re looking for highlights that were made and then corrected, which show up as separate chunks
+");
+
+	expect($a->isDuplicateOf($b))->toBeTrue();
+	expect($b->isDuplicateOf($a))->toBeTrue();
+	expect($a->isDuplicateOf($c))->toBeFalse();
+	expect($b->isDuplicateOf($c))->toBeFalse();
+});
 
 test('skips duplicates', function () {
     $content = "==========
