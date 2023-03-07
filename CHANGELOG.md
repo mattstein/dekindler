@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+### Fixed
+- Fixed a bug that still allowed duplicates to appear in output.
+
 ## 2.0.1 - 2023-03-04
 ### Added
 - Added PHPStan check and did some tidying up to clear level 5.
