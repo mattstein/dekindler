@@ -1,6 +1,6 @@
 # Dekindler
 
-![Pest status badge](https://github.com/mattstein/dekindler/actions/workflows/test.yml/badge.svg?branch=main)
+[![Pest status badge](https://github.com/mattstein/dekindler/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/mattstein/dekindler/actions/workflows/test.yml)
 
 Parser for Amazon Kindle’s `My Clippings.txt`, and a CLI command for writing to Markdown or JSON.
 
