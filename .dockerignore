@@ -1,0 +1,10 @@
+.git
+.gitattributes
+.github
+.idea
+.env
+vendor
+output
+node_modules
+.DS_Store
+.phpunit.result.cache
